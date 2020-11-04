@@ -3,7 +3,7 @@ import cv2
 from tkinter import *
 import os
 import argparse
-
+import random
 #Image inital
 def Img_init():
     img_init = np.zeros((720, 1280, 3), np.uint8)
@@ -159,6 +159,7 @@ if __name__ == '__main__':
                 print('Clear Append list',Append_list)
             elif key == ord("s"):
                     print(" Append_list: ", Append_list)
+                    print('Number of Photo:',len(Append_list))
             elif key == ord("r"):
                     Append_list.reverse()
                     print('Reverse AppendList:',Append_list)
@@ -222,6 +223,12 @@ if __name__ == '__main__':
                 lpd_btn = Button(lpd_window, text='click', command=lambda: Load_Processdata(lpd_content))
                 Create_window(lpd_window, lpd_label, lpd_content, lpd_btn)
                 No_img=0
+
+            elif key == ord('n'):
+
+                Append_list=random.sample(range(len(data)),30)
+                Append_list.sort()
+
 
 
 
