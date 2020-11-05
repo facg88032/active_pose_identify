@@ -228,7 +228,7 @@ if __name__ == '__main__':
 
                 Append_list=random.sample(range(len(data)),30)
                 Append_list.sort()
-
+                print('Random Select:',Append_list)
 
 
 

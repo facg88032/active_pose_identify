@@ -8,7 +8,7 @@ def main():
         a=np.load('Process_data/Finish/'+list1[i])
         for j in range(i+1,len(list1)):
             b=np.load('Process_data/Finish/'+list1[j])
-
+            #check data not duplicate
             if(a==b).all():
                 print(list1[i],list1[j]+' is same ')
 
