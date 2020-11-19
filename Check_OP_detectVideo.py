@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 
-Video='process_basketball_Video/shoot/'+'d8.mp4'
+Video='process_basketball_Video/dribble/'+'d8.mp4'
 vs=cv2.VideoCapture(Video)
 
 width=1280
