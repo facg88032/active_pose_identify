@@ -31,8 +31,8 @@ def random_selsct(times):
         for time in range(times):
             Append_list = random.sample(range(len(data)), 30)
             Append_list.sort()
-            SaveAppendList(Append_list,file,time)
-            Processdata(data,Append_list,file,time)
+            SaveAppendList(Append_list,file,time+1)
+            Processdata(data,Append_list,file,time+1)
 
             print('Random Select:', Append_list)
 
