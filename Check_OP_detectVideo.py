@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 
-Video='process_basketball_Video/dribble/'+'d9.mp4'
+Video='process_basketball_Video/shoot/'+'s8.mp4'
 vs=cv2.VideoCapture(Video)
 
 width=1280
@@ -19,6 +19,7 @@ params["model_folder"] = "../../../models/"
 params["model_pose"] = "BODY_25"
 params["fps_max"] = -1
 params['write_video_fps']=-1
+
 poseModel = op.PoseModel.BODY_25
 original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
 keypoints_index = dict((bp, num) for num, bp in original_keypoints_index.items())
