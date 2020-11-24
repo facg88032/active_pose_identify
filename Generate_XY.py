@@ -22,7 +22,7 @@ x_data, y_data = shuffle(dataset, labels)
 x_data[:,:,:,0] = x_data[:,:,:,0] / 480
 x_data[:,:,:,1] = x_data[:,:,:,1] / 720
 
-x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.33, random_state=1)
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.33)
 
 np.save('x_train.npy',x_train)
 np.save('x_test.npy',x_test)

@@ -8,15 +8,18 @@ from keras.layers import Activation
 from keras.optimizers import Adam ,SGD
 from sklearn.preprocessing import OneHotEncoder
 from keras.callbacks import ModelCheckpoint
-from keras.layers import TimeDistributed
+
 import pandas as pd
 import numpy as np
 
 
 
 
-X_train=np.load('x_data.npy')
-Y_train=np.load('y_data.npy')
+X_train=np.load('x_train.npy')
+Y_train=np.load('y_train.npy').reshape(-1,1)
+enc=OneHotEncoder()
+Y_train=enc.fit_transform(Y_train).toarray()
+
 
 X_train=X_train.reshape((len(X_train,)*30,25*3))
 X_train=pd.DataFrame(X_train)
@@ -70,4 +73,4 @@ mode='max')
 callbacks_list = [checkpoint]
 regressor.summary()
 # 進行訓練
-regressor.fit(X_train, Y_train, validation_split=0.3,epochs =20,callbacks=callbacks_list,batch_size = 300)
+regressor.fit(X_train, Y_train, validation_split=0.3,epochs =50,callbacks=callbacks_list,batch_size = 300)
