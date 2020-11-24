@@ -3,14 +3,15 @@ import os
 import random
 
 def SaveAppendList(Append_list,name,time,class_name):
-    filename=name[:2]+'f'+name[2:4]+'_'+str(time)+'.txt'
+    filename=name.strip('.npy')+'_'+str(time)+'f'+'.txt'
+
     with open('AppendList/Finish/'+class_name+'/'+filename, "w") as fs:
         for i in Append_list:
             fs.write(str(i) + "\n")
     print('Successful Save '+filename)
 
 def Processdata(data,Append_list,name,time,class_name):
-    filename=name[:2] + 'f' + name[2:4]+'_'+str(time) + '.npy'
+    filename=name.strip('.npy')+'_'+str(time)+'f'+'.npy'
     process_data = []
     for i in Append_list:
         process_data.append(data[i])
@@ -24,7 +25,6 @@ def random_selsct(times,class_name):
     #load  All Files in the folder
     for file in os.listdir('Process_data/Untreated/'):
         data=np.load('Process_data/Untreated/'+file)
-
         #According to the specified number of times,
         # and randomly select 30 images each time,
         # and save the results of each time and generate a new data
@@ -41,6 +41,6 @@ def random_selsct(times,class_name):
 
 if __name__ == '__main__':
 
-    class_name='dribble'
+    class_name='shoot'
     times=30
     random_selsct(times,class_name)
