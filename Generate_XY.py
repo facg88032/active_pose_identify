@@ -17,8 +17,6 @@ dataset=np.vstack((dribble,shoot))
 #shuffle all data
 x_data, y_data = shuffle(dataset, labels)
 
-#one-hot enconding
-y_data= to_categorical(y_data, 2)
 
 #resize x_data
 x_data[:,:,:,0] = x_data[:,:,:,0] / 480
