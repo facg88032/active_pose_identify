@@ -11,7 +11,8 @@ def main(class_name):
             #check data not duplicate
             if(a==b).all():
                 print(list1[i],list1[j]+' is same ')
-
+        print(i)
+    print('Check Finish')
 
 if __name__ == '__main__':
     class_name='dribble'
