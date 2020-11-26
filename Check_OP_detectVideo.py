@@ -47,19 +47,8 @@ while vs.isOpened():
     datum.cvInputData = frame
     opWrapper.emplaceAndPop([datum])
 
-    #Check  openpose whether detect keypoints or not
-    if datum.poseKeypoints.any() and datum.poseKeypoints.ndim == 3:
-
-        #Reshape keypoints data and save KeypointFrame
-        keypoints=datum.poseKeypoints[0].reshape(1, 25,3)
-        if KeypointFrame.size !=0:
-            KeypointFrame = np.vstack((KeypointFrame, keypoints))
-        else:
-            KeypointFrame = keypoints
-
     #Get openpose Output
     image = datum.cvOutputData
-    image_count +=1
     #Show the output
     cv2.imshow("Openpose", image)
     if cv2.waitKey(1)  == ord('q'):

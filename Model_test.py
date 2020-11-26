@@ -2,8 +2,8 @@ import keras
 import numpy as np
 import pandas as pd
 
-X_test=np.load('x_train.npy')
-Y_test=np.load('y_train.npy')
+X_test=np.load('x_test.npy')
+Y_test=np.load('y_test.npy')
 
 X_test=X_test.reshape((len(X_test,)*30,25*3))
 X_test=pd.DataFrame(X_test)

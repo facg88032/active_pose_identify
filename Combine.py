@@ -17,5 +17,5 @@ def main(class_name):
     print(combine_data.shape)
 
 if __name__ == '__main__':
-    class_name='dribble'
+    class_name='shoot'
     main(class_name)
