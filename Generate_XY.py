@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
-from keras.utils.np_utils import to_categorical
+
 
 
 dribble=np.load('dribble_data.npy')
