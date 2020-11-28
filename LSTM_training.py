@@ -31,6 +31,7 @@ def normalize(train):
 
   train_norm = train.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
   return train_norm
+
 X_train=normalize(X_train)
 X_train=X_train.values
 blocks = int(len(X_train) / 30)
@@ -58,7 +59,7 @@ regressor.add(Dropout(0.5))
 
 
 # Adding the output layer
-regressor.add(Dense(2,activation='softmax'))
+regressor.add(Dense(3,activation='softmax'))
 learning_rate = 0.1
 decay_rate = learning_rate / 100000
 momentum = 0.8
@@ -73,4 +74,4 @@ mode='max')
 callbacks_list = [checkpoint]
 regressor.summary()
 # 進行訓練
-regressor.fit(X_train, Y_train, validation_split=0.3,epochs =50,callbacks=callbacks_list,batch_size = 300)
+regressor.fit(X_train, Y_train, validation_split=0.3,epochs =50,callbacks=callbacks_list,batch_size = 200)

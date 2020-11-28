@@ -21,7 +21,7 @@ blocks = int(len(X_test) / 30)
 X_test = np.array(np.split(X_test, blocks))
 
 
-mpose = keras.models.load_model('weights-improvement-38-1.00.hdf5')
+mpose = keras.models.load_model('weights-improvement-16-1.00.hdf5')
 
 output = mpose.predict_classes(X_test)
 

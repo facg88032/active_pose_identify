@@ -14,13 +14,13 @@ session = tf.InteractiveSession(config=config)
 params = dict()
 params["model_folder"] = "../../../models/"
 
-mpose = keras.models.load_model('weights-improvement-38-1.00.hdf5')
+mpose = keras.models.load_model('weights-improvement-20-1.00.hdf5')
 
 poseModel = op.PoseModel.BODY_25
 original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
 keypoints_index = dict((bp, num) for num, bp in original_keypoints_index.items())
 
-Video='process_basketball_Video/dribble/'+'d10.mp4'
+Video='process_basketball_Video/shoot/'+'s8.mp4'
 vs=cv2.VideoCapture(Video)
 
 width=1280
@@ -51,7 +51,8 @@ while vs.isOpened():
     #Give inputData for openpoes to process
     datum.cvInputData = frame
     opWrapper.emplaceAndPop([datum])
-
+    # Gt openpose Output
+    image = datum.cvOutputData
     #Check  openpose whether detect keypoints or not
     if datum.poseKeypoints.any() and datum.poseKeypoints.ndim == 3:
 
@@ -62,34 +63,61 @@ while vs.isOpened():
         else:
             KeypointFrame = keypoints
 
+    if len(KeypointFrame)<30:
+        cv2.putText(image,
+                    "first",
+                    (300,75 ), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                    (255, 255, 255), 2)
+    elif len(KeypointFrame)>30:
+        cv2.putText(image,
+                    "End",
+                    (300,75), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                    (255, 255, 255), 2)
+
     if len(KeypointFrame)==50:
         Append_list = random.sample(range(50), 30)
         Append_list.sort()
         process_data = []
         for i in Append_list:
             process_data.append(KeypointFrame[i])
-        print('123')
-        process_data = np.asarray(process_data).reshape(1,30,75)
-        # process_data = pd.DataFrame(process_data)
-        #
-        #
-        # def normalize(train):
-        #
-        #     train_norm = train.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
-        #     return train_norm
-        #
-        #
-        # process_data = normalize(process_data)
-        # process_data = process_data.values
-        # blocks = int(len(process_data) / 30)
-        # process_data = np.array(np.split(process_data, blocks))
+        process_data = np.asarray(process_data).reshape(30,75)
+        process_data = pd.DataFrame(process_data)
+
+
+        def normalize(train):
+
+            train_norm = train.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
+            return train_norm
+
+
+        process_data = normalize(process_data)
+        process_data = process_data.values
+        blocks = int(len(process_data) / 30)
+        process_data = np.array(np.split(process_data, blocks))
         output = mpose.predict_classes(process_data)
-        print(output)
+
+        if output == 0:
+            # print("stand")
+            cv2.putText(image,
+                        "dribble",
+                        (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                        (0, 0, 0), 5)
+        elif output == 1:
+            # print("sit")
+            cv2.putText(image,
+                        "shoot",
+                        (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                        (0, 0, 0), 5)
+        elif output == 2:
+            # print('other')
+            cv2.putText(image,
+                        "other",
+                        (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                        (255, 255, 255), 5)
         KeypointFrame=np.array([])
-    #Gt openpose Output
-    image = datum.cvOutputData
+
     #Show the output
-    #cv2.imshow("Openpose", image)
+    cv2.imshow("Openpose", image)
     if cv2.waitKey(1)  == ord('q'):
         break
 

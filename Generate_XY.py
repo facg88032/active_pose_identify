@@ -6,13 +6,15 @@ from sklearn.model_selection import train_test_split
 
 dribble=np.load('dribble_data.npy')
 shoot=np.load('shoot_data.npy')
-
+other=np.load('other_data.npy')
 #make label and merge label
 labels = np.zeros(len(dribble))
 labels = np.append(labels, np.full((len(shoot)), 1))
+labels = np.append(labels, np.full((len(other)), 2))
 
 #merge data
 dataset=np.vstack((dribble,shoot))
+dataset=np.vstack(((dataset,other)))
 
 #shuffle all data
 x_data, y_data = shuffle(dataset, labels)
