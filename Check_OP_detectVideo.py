@@ -16,9 +16,12 @@ vs.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 # Custom Params (refer to include/openpose/flags.hpp for more parameters)
 params = dict()
 params["model_folder"] = "../../../models/"
+
+params["number_people_max"] = 1
 params["model_pose"] = "BODY_25"
 params["fps_max"] = -1
 params['write_video_fps']=-1
+params["disable_blending"] = True
 
 poseModel = op.PoseModel.BODY_25
 original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
@@ -50,7 +53,8 @@ while vs.isOpened():
     #Get openpose Output
     image = datum.cvOutputData
     #Show the output
-    cv2.imshow("Openpose", image)
+    cv2.imshow("Openpose", frame)
+    cv2.imwrite('output.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 90])
     if cv2.waitKey(1)  == ord('q'):
         break
 

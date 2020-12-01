@@ -6,21 +6,21 @@ import random
 import time
 import tensorflow as tf
 import pandas as pd
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-session = tf.InteractiveSession(config=config)
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# session = tf.InteractiveSession(config=config)
 
 # Custom Params (refer to include/openpose/flags.hpp for more parameters)
 params = dict()
 params["model_folder"] = "../../../models/"
-
-mpose = keras.models.load_model('weights-improvement-20-1.00.hdf5')
+params["disable_blending"] = True
+mpose = keras.models.load_model('weights-improvement-15-0.99.hdf5')
 
 poseModel = op.PoseModel.BODY_25
 original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
 keypoints_index = dict((bp, num) for num, bp in original_keypoints_index.items())
 
-Video='process_basketball_Video/shoot/'+'s8.mp4'
+Video='process_basketball_Video/dribble/'+'44.mp4'
 vs=cv2.VideoCapture(Video)
 
 width=1280
@@ -63,58 +63,46 @@ while vs.isOpened():
         else:
             KeypointFrame = keypoints
 
-    if len(KeypointFrame)<30:
-        cv2.putText(image,
-                    "first",
-                    (300,75 ), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                    (255, 255, 255), 2)
-    elif len(KeypointFrame)>30:
-        cv2.putText(image,
-                    "End",
-                    (300,75), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                    (255, 255, 255), 2)
 
-    if len(KeypointFrame)==50:
-        Append_list = random.sample(range(50), 30)
-        Append_list.sort()
-        process_data = []
-        for i in Append_list:
-            process_data.append(KeypointFrame[i])
-        process_data = np.asarray(process_data).reshape(30,75)
-        process_data = pd.DataFrame(process_data)
+    #if len(KeypointFrame)==30:
+        # Append_list = random.sample(range(50), 30)
+        # Append_list.sort()
+        # process_data = []
+        # for i in Append_list:
+        #     process_data.append(KeypointFrame[i])
+        # process_data = KeypointFrame.reshape(30,75)
+        # process_data = pd.DataFrame(process_data)
+        #
+        #
+        # def normalize(train):
+        #
+        #     train_norm = train.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
+        #     return train_norm
+        #
+        #
+        # process_data = normalize(process_data)
+        # process_data = process_data.values
+        # blocks = int(len(process_data) / 30)
+        # process_data = np.array(np.split(process_data, blocks))
+        # output = mpose.predict_classes(process_data)
 
-
-        def normalize(train):
-
-            train_norm = train.apply(lambda x: (x - np.mean(x)) / (np.max(x) - np.min(x)))
-            return train_norm
-
-
-        process_data = normalize(process_data)
-        process_data = process_data.values
-        blocks = int(len(process_data) / 30)
-        process_data = np.array(np.split(process_data, blocks))
-        output = mpose.predict_classes(process_data)
-
-        if output == 0:
-            # print("stand")
-            cv2.putText(image,
-                        "dribble",
-                        (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                        (0, 0, 0), 5)
-        elif output == 1:
-            # print("sit")
-            cv2.putText(image,
-                        "shoot",
-                        (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                        (0, 0, 0), 5)
-        elif output == 2:
-            # print('other')
-            cv2.putText(image,
-                        "other",
-                        (0,0), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                        (255, 255, 255), 5)
-        KeypointFrame=np.array([])
+        # if output == 0:
+        #     cv2.putText(image,
+        #                 "dribble",
+        #                 (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+        #                 (255, 255, 255), 5)
+        # elif output == 1:
+        #     cv2.putText(image,
+        #                 "shoot",
+        #                 (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+        #                 (255, 255, 255), 5)
+        # elif output == 2:
+        #     cv2.putText(image,
+        #                 "other",
+        #                 (100,100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+        #                 (255, 255, 255), 5)
+        #KeypointFrame=np.delete(KeypointFrame,np.s_[:1],0)
+       # time.sleep(1)
 
     #Show the output
     cv2.imshow("Openpose", image)
