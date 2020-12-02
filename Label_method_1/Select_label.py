@@ -5,6 +5,7 @@ import os
 import argparse
 import random
 
+
 #Image inital
 def Img_init():
     img_init = np.zeros((720, 1280, 3), np.uint8)
@@ -16,27 +17,54 @@ def Load_data(data_name):
     data=np.load(data_name)
     return data
 
-#Different models have different Connect_sequence
-def  Connect_sequence(model_type):
+#Different models have different posePartPairs
+def  PosePartPairs(model_type):
     #0 is Body_25 ,1 is COCO
     if model_type == 0:
-        ct_seq=[1,2,3,4,3,2,1,5,6,7,6,5,1,0,16,18,16,0,15,17,15,0,1,8,9,10,11,24,11,22,23,22,11,10,9,8
-            ,12,13,14,21,14,19,20]
+        Pairs=[1,8,1,2,1,5,2,3,3,4,5,6,6,7,8,9,9,10,10,11,8,12,12,13,13,14,1,0,0,15,15,17,0,16,16,18,14,19,19,20,14,21, 11,22,22,23,11,24]
+        Pairs=np.asarray(Pairs).reshape(24,2)
     else :
-        ct_seq=[1,2,3,4,3,2,1,5,6,7,6,5,1,0,14,16,14,0,15,17,15,0,1,8,9,10,9,8,1,11,12,13,12,11,1]
-    return ct_seq
+        Pairs=[1,2,3,4,3,2,1,5,6,7,6,5,1,0,14,16,14,0,15,17,15,0,1,8,9,10,9,8,1,11,12,13,12,11,1]
+    return Pairs
 
 #Connect N*Keppoint
-def Draw_kepyoint(data,ct_seq,img,No_img):
+def Draw_kepyoint(data,Pairs,img,No_img):
+    color = [(0, 0, 255), #1 8
+             (0, 85, 255),#1 2
+             (0, 255, 170),#1 5
+             (0, 170, 255),#2 3
+             (0, 255, 255),#3 4
+             (0, 170, 0),#5 6
+             (0,100,0),#6 7
+             (85, 170, 0),#8 9
+             (140, 170, 0),#9 10
+             (255, 255, 0),#10 11
+             (255, 170, 0),#8 12
+             ( 255, 85,0),#12 13
+             (255, 0, 0),#13 14
+             (85,0, 255),#1 0
+             (170, 0, 255),# 0 15
+             (85, 0, 255),#15 17
+             (255, 0, 170),#0 16
+             (255, 0, 85),#16 18
+             (255, 0, 0),#14 19
+             (255, 0, 0),#19 20
+             (255, 0, 0),#14 21
+             (255, 255, 0),#11 22
+             (255, 255, 0),#22 23
+             (255, 255, 0),]#11 24             ]
+    step=0
+    for pairA,pairB in Pairs:
 
-    for i in range(len(ct_seq) - 1):
-        if (data[No_img][ct_seq[i]][0] == 0 and data[No_img][ct_seq[i]][1] == 0) or (
-                data[No_img][ct_seq[i + 1]][0] == 0 and data[No_img][ct_seq[i + 1]][1] == 0):
+        if (data[No_img][pairA][0] == 0 and data[No_img][pairA][1] == 0) or (
+                data[No_img][pairB][0] == 0 and data[No_img][pairB][1] == 0):
             pass
         else:
-            #print(data[No_img][ct_seq[i]][0])
-            cv2.line(img, (int(data[No_img][ct_seq[i]][0]), int(data[No_img][ct_seq[i]][1])),
-                     (int(data[No_img][ct_seq[i + 1]][0]), int(data[No_img][ct_seq[i + 1]][1])), (0, 0, 0), 5)
+
+            cv2.line(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])),
+                     (int(data[No_img][pairB][0]), int(data[No_img][pairB][1])),color[step], 3)
+            cv2.circle(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])),3, (0, 0, 0),  thickness=-1, lineType=cv2.FILLED)
+        step += 1
 
     cv2.putText(img,
                 str(No_img),
@@ -124,8 +152,8 @@ if __name__ == '__main__':
         #parameter No_img is Number of img , model type is choice model
         No_img=0
         model_type=0
-        #Use the corresponding ct_seq according to model_type
-        ct_seq=Connect_sequence(model_type)
+        #Use the corresponding posePartPairs according to model_type
+        Pairs=PosePartPairs(model_type)
 
         #Create delete list
         Append_list=[]
@@ -137,7 +165,7 @@ if __name__ == '__main__':
             # img initial
             img = Img_init()
             # Connect Keypoint && Show Current Img
-            Draw_kepyoint(data, ct_seq, img, No_img)
+            Draw_kepyoint(data, Pairs, img, No_img)
 
             # q is exit,z is next picture
             key = cv2.waitKey(1) & 0xFF
