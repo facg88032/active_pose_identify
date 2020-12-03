@@ -101,17 +101,17 @@ def Load_Processdata(content):
 
 #Use Append list to process original data
 #Save process data and Append_list
-def Process_and_Save_Data(data ,Append_list,content,class_name):
+def Process_and_Save_Data(data ,Append_list,filename,class_name):
     process_data=[]
     for i in Append_list:
         process_data.append(data[i])
     process_data=np.asarray(process_data)
-    with open('AppendList/half_'+class_name+'/'+content.get()+'e'+'.txt', "w") as fs:
+    with open('AppendList/half_'+class_name+'/'+filename.get()+'e'+'.txt', "w") as fs:
         for i in Append_list:
             fs.write(str(i) + "\n")
-    np.save('Process_data/half_'+class_name+'/'+ content.get()+'e' + '.npy', process_data)
-    print('Successful Save '+content.get()+'.txt')
-    print('Successful process and Save to '+content.get()+'.npy')
+    np.save('Process_data/half_'+class_name+'/'+ filename.get()+'e' + '.npy', process_data)
+    print('Successful Save '+filename.get()+'e'+'.txt')
+    print('Successful process and Save to '+filename.get()+'e'+'.npy')
 
 #Create tkinter GUI window
 def Create_window(window,label,content,btn):
@@ -125,20 +125,20 @@ def Label_image(data,Append_list,class_name):
     window.geometry('200x100')
     label = Label(window, text='Save Data')
     content = Entry(window, borderwidth=5)
+    content.bind("<Return>", lambda e: Process_and_Save_Data(data, Append_list, content, class_name))
     btn = Button(window, text='click', command=lambda: Process_and_Save_Data(data,Append_list, content,class_name))
-    content.bind("<Return>", lambda e : Process_and_Save_Data(data,Append_list, content,class_name))
     Create_window(window, label, content, btn)
 
 
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--data_path", default="../Label_method_1/Original_data/shoot/s5.npy", help="load the numpy type data")
+        parser.add_argument("--data_path", default="Original_data/shoot/s5.npy", help="load the numpy type data")
         args = parser.parse_known_args()
         #Load Original_data ＆ Reshape data  75 to 25*3
         # parameter No_img is Number of img , model type is choice model
         # Use the corresponding posePartPairs according to model_type
-        # Create delete list
+        # Create Append list
         No_img=0
         model_type = 0
         current= 0
@@ -180,7 +180,7 @@ if __name__ == '__main__':
 
 
             elif key == ord("d"):
-                class_name='dribbe'
+                class_name='dribble'
                 Label_image(data,Append_list,class_name)
                 Append_list = []
 
