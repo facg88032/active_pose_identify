@@ -155,7 +155,7 @@ if __name__ == '__main__':
         #Use the corresponding posePartPairs according to model_type
         Pairs=PosePartPairs(model_type)
 
-        #Create delete list
+        #Create Append list
         Append_list=[]
 
 
