@@ -101,7 +101,7 @@ while vs.isOpened():
                         "other",
                         (100,100), cv2.FONT_HERSHEY_SIMPLEX, 2,
                         (255, 255, 255), 5)
-        KeypointFrame=np.delete(KeypointFrame,q,0)
+        KeypointFrame=np.delete(KeypointFrame,5,0)
         #time.sleep(1)
 
     #Show the output

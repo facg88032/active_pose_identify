@@ -29,7 +29,7 @@ def Img_init():
     return img_init
 
 #Connect N*Keppoint
-def Draw_kepyoint(data,Pairs,img,No_img):
+def Draw_kepyoint(data,Pairs,img,No_img,current):
     color = [(0, 0, 255), #1 8
              (0, 85, 255),#1 2
              (0, 255, 170),#1 5
@@ -68,7 +68,7 @@ def Draw_kepyoint(data,Pairs,img,No_img):
         color_id += 1
 
     cv2.putText(img,
-                str(No_img),
+                str(current),
                 (500, 500), cv2.FONT_HERSHEY_SIMPLEX, 2,
                 (0, 0, 0), 5)
     cv2.imshow("Connect_img", img)
@@ -101,17 +101,18 @@ def Load_Processdata(content):
 
 #Use Append list to process original data
 #Save process data and Append_list
-def Process_and_Save_Data(data ,Append_list,filename,class_name):
+def Process_and_Save_Data(data ,Append_list,data_name,class_name,label_number):
+    filename=data_name+'_'+class_name[0]+'_'+str(label_number)+'e'
     process_data=[]
     for i in Append_list:
         process_data.append(data[i])
     process_data=np.asarray(process_data)
-    with open('AppendList/half_'+class_name+'/'+filename.get()+'e'+'.txt', "w") as fs:
+    with open('AppendList/half_'+class_name+'_e/'+filename+'.txt', "w") as fs:
         for i in Append_list:
             fs.write(str(i) + "\n")
-    np.save('Process_data/half_'+class_name+'/'+ filename.get()+'e' + '.npy', process_data)
-    print('Successful Save '+filename.get()+'e'+'.txt')
-    print('Successful process and Save to '+filename.get()+'e'+'.npy')
+    np.save('Process_data/half_'+class_name+'_e/'+ filename+ '.npy', process_data)
+    print('Successful Save '+filename+'.txt')
+    print('Successful process and Save to '+filename+'.npy')
 
 #Create tkinter GUI window
 def Create_window(window,label,content,btn):
@@ -119,108 +120,121 @@ def Create_window(window,label,content,btn):
     content.pack()
     btn.pack()
     window.mainloop()
-def Label_image(data,Append_list,class_name):
-    window = Tk()
-    window.title('Save Data')
-    window.geometry('200x100')
-    label = Label(window, text='Save Data')
-    content = Entry(window, borderwidth=5)
-    content.bind("<Return>", lambda e: Process_and_Save_Data(data, Append_list, content, class_name))
-    btn = Button(window, text='click', command=lambda: Process_and_Save_Data(data,Append_list, content,class_name))
-    Create_window(window, label, content, btn)
 
 
 if __name__ == '__main__':
-    try:
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--data_path", default="Original_data/shoot/s5.npy", help="load the numpy type data")
-        args = parser.parse_known_args()
-        #Load Original_data ＆ Reshape data  75 to 25*3
-        # parameter No_img is Number of img , model type is choice model
-        # Use the corresponding posePartPairs according to model_type
-        # Create Append list
-        No_img=0
-        model_type = 0
-        current= 0
-        step = 0
-        Append_list = []
-        Pairs=PosePartPairs(model_type)
-        data = Load_data(args[0].data_path)
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--data_path", default="Original_data/shoot/s5.npy", help="load the numpy type data")
+    args = parser.parse_known_args()
+    #Load Original_data ＆ Reshape data  75 to 25*3
+    # parameter No_img is Number of img , model type is choice model
+    # Use the corresponding posePartPairs according to model_type
+    # Create Append list
+    No_img=0
+    model_type = 0
+    current= 0
+    step = 0
+    max_frame=50
+    move_space=5
+    LabelNo_d = 1
+    LabelNo_s = 1
+    LabelNo_o = 1
+    Append_list = [i for i in range(max_frame)]
+    Pairs=PosePartPairs(model_type)
+    data = Load_data(args[0].data_path)
+    data_name= args[0].data_path.split("/")[-1].replace('.npy','')
 
 
-        while True:
+    while True:
 
-            # img initial
-            # Connect Keypoint && Show Current Img
-            img = Img_init()
-            Draw_kepyoint(data, Pairs, img, current)
-            current+=1
-            step+=1
-            time.sleep(0.01)
-            if step%50==0:
-                current=No_img
+        # img initial
+        # Connect Keypoint && Show Current Img
+        img = Img_init()
+        Draw_kepyoint(data, Pairs, img, No_img,current)
+        No_img+=1
+        step+=1
+        time.sleep(0.01)
+        if step%max_frame==0:
+            No_img=current
 
+        # if No_img not in Append_list:
+        #     Append_list.append(No_img)
+        #     Append_list.sort()
 
-            #  q is exit,z is next picture
-            key = cv2.waitKey(1) & 0xFF
-            if key == ord("q"):
-                 break
+        #  q is exit,z is next picture
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord("q"):
+             break
 
-            elif key == ord("c"):
-                if No_img < len(data)-1:
-                    No_img = No_img + 5
-                else:
-                    print("This is last picture")
+        elif key == ord("c"):
+            if current < len(data)-1:
+                current = current + move_space
+                Append_list=Append_list[move_space:]
+                for i in range(move_space):
+                    Append_list.append(Append_list[-1]+1)
+            else:
+                print("This is last picture")
 
-            elif key == ord("z"):
-                if No_img > 0:
-                    No_img = No_img - 5
-                else:
-                    print("This is first picture")
+        elif key == ord("z"):
+            if current > 0:
+                current = current - move_space
+                Append_list = Append_list[:len(Append_list)-move_space]
+                for i in range(move_space):
+                    Append_list.append(Append_list[0]-1)
+                    Append_list.sort()
 
-
-            elif key == ord("d"):
-                class_name='dribble'
-                Label_image(data,Append_list,class_name)
-                Append_list = []
-
-            elif key == ord("s"):
-                class_name='shoot'
-                Label_image(data,Append_list,class_name)
-                Append_list = []
-
-
-            elif key == ord("a"):
-                class_name='other'
-                Label_image(data,Append_list,class_name)
-                Append_list = []
-
-
-            elif key == ord('j'):
-                ld_window = Tk()
-                ld_window.title('Load_AppendList')
-                ld_window.geometry('200x100')
-                ld_label= Label(ld_window, text='Input your Filename')
-                ld_content = Entry(ld_window, borderwidth=5)
-                ld_btn = Button(ld_window, text='click', command=lambda :Load_list(ld_content))
-                Create_window(ld_window,ld_label,ld_content,ld_btn)
-
-            elif key == ord('k'):
-                lpd_window = Tk()
-                lpd_window.title('Load_ProcessData')
-                lpd_window.geometry('200x100')
-                lpd_label = Label(lpd_window, text='Input your Filename')
-                lpd_content = Entry(lpd_window, borderwidth=5)
-                lpd_btn = Button(lpd_window, text='click', command=lambda: Load_Processdata(lpd_content))
-                Create_window(lpd_window, lpd_label, lpd_content, lpd_btn)
-                No_img=0
+            else:
+                print("This is first picture")
+        elif key == ord("s"):
+                print(" Append_list: ", Append_list)
+                print('Number of Photo:',len(Append_list))
 
 
 
-        #Close opencv
-        cv2.destroyAllWindows()
-    except Exception as e:
-        print(e)
+        elif key == ord("d"):
+            class_name='dribble'
+            Process_and_Save_Data(data, Append_list, data_name, class_name,LabelNo_d)
+            LabelNo_d+=1
+
+
+        elif key == ord("s"):
+            class_name='shoot'
+            Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_s)
+            LabelNo_s += 1
+
+
+
+        elif key == ord("a"):
+            class_name='other'
+            Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_o)
+            LabelNo_o += 1
+
+
+        elif key == ord('j'):
+            ld_window = Tk()
+            ld_window.title('Load_AppendList')
+            ld_window.geometry('200x100')
+            ld_label= Label(ld_window, text='Input your Filename')
+            ld_content = Entry(ld_window, borderwidth=5)
+            ld_btn = Button(ld_window, text='click', command=lambda :Load_list(ld_content))
+            Create_window(ld_window,ld_label,ld_content,ld_btn)
+
+        elif key == ord('k'):
+            lpd_window = Tk()
+            lpd_window.title('Load_ProcessData')
+            lpd_window.geometry('200x100')
+            lpd_label = Label(lpd_window, text='Input your Filename')
+            lpd_content = Entry(lpd_window, borderwidth=5)
+            lpd_btn = Button(lpd_window, text='click', command=lambda: Load_Processdata(lpd_content))
+            Create_window(lpd_window, lpd_label, lpd_content, lpd_btn)
+            No_img=0
+
+
+
+    #Close opencv
+    cv2.destroyAllWindows()
+
 
 
 
