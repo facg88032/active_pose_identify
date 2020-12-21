@@ -64,7 +64,7 @@ def main(video_path,save_path):
                 image = datum.cvOutputData
                 image_count +=1
                 #Show the output
-                cv2.imshow("Openpose", image)
+                #cv2.imshow("Openpose", image)
                 if cv2.waitKey(1)  == ord('q'):
                     break
 
