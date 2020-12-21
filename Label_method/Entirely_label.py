@@ -111,7 +111,6 @@ def Process_and_Save_Data(data ,Append_list,data_name,class_name,label_number):
         for i in Append_list:
             fs.write(str(i) + "\n")
     np.save('Process_data/half_'+class_name+'_e/'+ filename+ '.npy', process_data)
-    print('Successful Save '+filename+'.txt')
     print('Successful process and Save to '+filename+'.npy')
 
 #Create tkinter GUI window
@@ -135,8 +134,8 @@ if __name__ == '__main__':
     model_type = 0
     current= 0
     step = 0
-    max_frame=50
-    move_space=5
+    max_frame=40
+    move_space=3
     LabelNo_d = 1
     LabelNo_s = 1
     LabelNo_o = 1
@@ -154,13 +153,11 @@ if __name__ == '__main__':
         Draw_kepyoint(data, Pairs, img, No_img,current)
         No_img+=1
         step+=1
-        time.sleep(0.01)
+        time.sleep(0.05)
         if step%max_frame==0:
             No_img=current
 
-        # if No_img not in Append_list:
-        #     Append_list.append(No_img)
-        #     Append_list.sort()
+
 
         #  q is exit,z is next picture
         key = cv2.waitKey(1) & 0xFF
@@ -183,32 +180,31 @@ if __name__ == '__main__':
                 for i in range(move_space):
                     Append_list.append(Append_list[0]-1)
                     Append_list.sort()
-
             else:
                 print("This is first picture")
+
         elif key == ord("s"):
                 print(" Append_list: ", Append_list)
                 print('Number of Photo:',len(Append_list))
-
 
 
         elif key == ord("d"):
             class_name='dribble'
             Process_and_Save_Data(data, Append_list, data_name, class_name,LabelNo_d)
             LabelNo_d+=1
-
+            print('Current No_img:',current)
 
         elif key == ord("s"):
             class_name='shoot'
             Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_s)
             LabelNo_s += 1
-
-
+            print('Current No_img:', current)
 
         elif key == ord("a"):
             class_name='other'
             Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_o)
             LabelNo_o += 1
+            print('Current No_img:', current)
 
 
         elif key == ord('j'):
