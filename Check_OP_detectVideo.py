@@ -4,7 +4,7 @@ import numpy as np
 import time
 import os
 
-Video='process_basketball_Video/shoot/'+'s3.mp4'
+Video='basketball_shot480p/'+'sv4.mp4'
 vs=cv2.VideoCapture(Video)
 
 width=1280
@@ -19,7 +19,7 @@ params["model_folder"] = "../../../models/"
 
 params["number_people_max"] = 1
 params["model_pose"] = "BODY_25"
-params["fps_max"] = -1
+params["fps_max"] = 60
 params['write_video_fps']=-1
 #params["disable_blending"] = True
 
@@ -40,7 +40,10 @@ datum = op.Datum()
 KeypointFrame=np.array([])
 image_count=0
 start = time.time()
+
+
 while vs.isOpened():
+
 
     #Get frame from video or webcam
     ret ,frame=vs.read()
@@ -52,9 +55,11 @@ while vs.isOpened():
 
     #Get openpose Output
     image = datum.cvOutputData
-    #Show the output
-    cv2.imshow("Openpose", image)
-    cv2.imwrite('output.jpg', image, [cv2.IMWRITE_JPEG_QUALITY, 90])
+    if image_count >= 1050 and image_count <=1300:
+        #Show the output
+        cv2.imshow("Openpose", image)
+
+    image_count+=1
     if cv2.waitKey(1)  == ord('q'):
         break
 

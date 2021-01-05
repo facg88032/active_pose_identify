@@ -13,13 +13,15 @@ import pandas as pd
 # Custom Params (refer to include/openpose/flags.hpp for more parameters)
 params = dict()
 params["model_folder"] = "../../../models/"
+params["render_threshold"]=0.7
 #params["disable_blending"] = True
-mpose = keras.models.load_model('model/model_2/weights-improvement-20-1.00.hdf5')
+mpose = keras.models.load_model('training/weights-improvement-28-0.99.hdf5')
 
 poseModel = op.PoseModel.BODY_25
 original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
 keypoints_index = dict((bp, num) for num, bp in original_keypoints_index.items())
-Video='process_basketball_Video/shoot/'+'s3.mp4'
+Video='basketball_shot480p/'+'sv1.mp4'
+# Video='11.mp4'
 #Video='process_basketball_Video/dribble/'+'44.mp4'
 vs=cv2.VideoCapture(Video)
 
@@ -35,24 +37,28 @@ opWrapper.configure(params)
 opWrapper.start()
 
 datum = op.Datum()
-
 fps_time = 0
-
+max_frame=40
 
 # Create array to save all keypoint frame
 KeypointFrame=np.array([])
 start = time.time()
-while vs.isOpened():
 
+dribble=[]
+shoot=[]
+while vs.isOpened():
+    No_img=int(vs.get(cv2.CAP_PROP_POS_FRAMES))
     #Get frame from video or webcam
     ret ,frame=vs.read()
     if not ret:
         break
+
     #Give inputData for openpoes to process
     datum.cvInputData = frame
     opWrapper.emplaceAndPop([datum])
     # Gt openpose Output
     image = datum.cvOutputData
+
     #Check  openpose whether detect keypoints or not
     if datum.poseKeypoints.any() and datum.poseKeypoints.ndim == 3:
 
@@ -64,13 +70,14 @@ while vs.isOpened():
             KeypointFrame = keypoints
 
 
-    if len(KeypointFrame)==40:
-        Append_list = random.sample(range(40), 30)
+    if len(KeypointFrame)==max_frame:
+
+        Append_list = random.sample(range(max_frame), 30)
         Append_list.sort()
-        process_data = []
+        temp = []
         for i in Append_list:
-            process_data.append(KeypointFrame[i])
-        process_data = np.asarray(process_data).reshape(30,75)
+            temp.append(KeypointFrame[i])
+        process_data = np.asarray(temp).reshape(30,75)
         process_data = pd.DataFrame(process_data)
 
 
@@ -90,28 +97,37 @@ while vs.isOpened():
             cv2.putText(image,
                         "dribble",
                         (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                        (255, 255, 255), 5)
+                        (255, 25, 255), 5)
+            start_img=No_img-39
+            dribble.append(start_img)
         elif output == 1:
             cv2.putText(image,
                         "shoot",
                         (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                        (255, 255, 255), 5)
-        elif output == 2:
-            cv2.putText(image,
-                        "other",
-                        (100,100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                        (255, 255, 255), 5)
-        KeypointFrame=np.delete(KeypointFrame,5,0)
+                        (85, 255, 255), 5)
+            start_img = No_img - 39
+            shoot.append(start_img)
+
+
+
+        KeypointFrame=np.delete(KeypointFrame,np.s_[:10],0)
         #time.sleep(1)
 
     #Show the output
     cv2.imshow("Openpose", image)
+
     if cv2.waitKey(1)  == ord('q'):
         break
+
 
 
 # clean up after yourself
 vs.release()
 cv2.destroyAllWindows()
 
-
+with open('dribble_log'+'.txt', "w") as fs:
+    for i in dribble:
+        fs.write(str(i) + "\n")
+with open('shoot_log'+'.txt', "w") as fs:
+    for i in shoot:
+        fs.write(str(i) + "\n")
