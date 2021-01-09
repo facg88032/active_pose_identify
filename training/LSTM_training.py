@@ -21,7 +21,7 @@ enc=OneHotEncoder()
 Y_train=enc.fit_transform(Y_train).toarray()
 
 
-X_train=X_train.reshape((len(X_train,)*30,25*3))
+X_train=X_train.reshape((len(X_train,)*40,25*3))
 X_train=pd.DataFrame(X_train)
 
 
@@ -34,7 +34,7 @@ def normalize(train):
 
 X_train=normalize(X_train)
 X_train=X_train.values
-blocks = int(len(X_train) / 30)
+blocks = int(len(X_train) / 40)
 X_train = np.array(np.split(X_train, blocks))
 
 # Initialising the RNN
@@ -74,4 +74,4 @@ mode='max')
 callbacks_list = [checkpoint]
 regressor.summary()
 # 進行訓練
-regressor.fit(X_train, Y_train, validation_split=0.3,epochs =50,callbacks=callbacks_list,batch_size = 200)
+regressor.fit(X_train, Y_train, validation_split=0.3,epochs =100,callbacks=callbacks_list,batch_size = 200)

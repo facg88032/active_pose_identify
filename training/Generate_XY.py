@@ -4,9 +4,10 @@ from sklearn.model_selection import train_test_split
 
 
 
-dribble=np.load('dribble_data.npy')
-shoot=np.load('shoot_data.npy')
-other=np.load('other_data.npy')
+dribble=np.load('dribble.npy')
+shoot=np.load('shoot.npy')
+other=np.load('pa1.npy').reshape(1,40,25,3)
+
 #make label and merge label
 labels = np.zeros(len(dribble))
 labels = np.append(labels, np.full((len(shoot)), 1))
@@ -22,7 +23,7 @@ x_data, y_data = shuffle(dataset, labels)
 
 #resize x_data
 x_data[:,:,:,0] = x_data[:,:,:,0] / 480
-x_data[:,:,:,1] = x_data[:,:,:,1] / 720
+x_data[:,:,:,1] = x_data[:,:,:,1] / 640
 
 x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=0.33)
 

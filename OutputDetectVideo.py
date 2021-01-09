@@ -1,6 +1,6 @@
-
 import cv2
-import time
+
+
 indexs=[]
 with open('shoot_log.txt','r') as fs:
     for text in fs:

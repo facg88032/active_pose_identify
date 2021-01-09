@@ -4,20 +4,21 @@ import numpy as np
 import time
 import os
 
-Video='basketball_shot480p/'+'sv4.mp4'
-vs=cv2.VideoCapture(Video)
+Video='basketball_shot480p/'+'sv22.mp4'
 
+vs=cv2.VideoCapture(Video)
+index=0
 width=1280
 height=720
 vs.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 vs.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-
+vs.set(cv2.CAP_PROP_POS_FRAMES, index)
 
 # Custom Params (refer to include/openpose/flags.hpp for more parameters)
 params = dict()
 params["model_folder"] = "../../../models/"
 
-params["number_people_max"] = 1
+
 params["model_pose"] = "BODY_25"
 params["fps_max"] = 60
 params['write_video_fps']=-1
@@ -55,11 +56,14 @@ while vs.isOpened():
 
     #Get openpose Output
     image = datum.cvOutputData
-    if image_count >= 1050 and image_count <=1300:
-        #Show the output
-        cv2.imshow("Openpose", image)
+    cv2.imshow("Openpose", image)
 
     image_count+=1
+
+    if vs.get(cv2.CAP_PROP_POS_FRAMES)==index+39:
+        cv2.waitKey(0)
+    if cv2.waitKey(1)  == ord('g'):
+        print(vs.get(cv2.CAP_PROP_POS_FRAMES))
     if cv2.waitKey(1)  == ord('q'):
         break
 

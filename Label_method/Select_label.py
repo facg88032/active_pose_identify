@@ -143,7 +143,7 @@ def Create_window(window,label,content,btn):
 if __name__ == '__main__':
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument("--data_path", default="Original_data/dribble/d1.npy", help="load the numpy type data")
+        parser.add_argument("--data_path", default="Original_data/sv/sv34.npy", help="load the numpy type data")
         args = parser.parse_known_args()
         #Load Original_data ＆ Reshape data  75 to 25*3
 
