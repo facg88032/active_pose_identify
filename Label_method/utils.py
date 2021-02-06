@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 import random
 class Utils:
@@ -26,7 +27,7 @@ class Utils:
             y = m
         return x
 
-    def StraifiedRandomSample(self,num_population, num_sample):
+    def StratifiedRandomSample(self,num_population, num_sample):
         StraifiedSample = []
         stratums = self.gcd(num_population, num_sample)
         interval = int(num_population / stratums)
@@ -37,3 +38,9 @@ class Utils:
             StraifiedSample.append(PartofSample)
         return StraifiedSample
 
+    def DropDuplicate(self,data):
+        df=pd.DataFrame(data)
+        drop_dup=df.drop_duplicates()
+        check_data=drop_dup.values
+        check_data=check_data.reshape(len(check_data),int(check_data.shape[1]/75),25,3)
+        return check_data

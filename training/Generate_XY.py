@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 
 dribble=np.load('dribble.npy')
 shoot=np.load('shoot.npy')
-other=np.load('pa1.npy').reshape(1,40,25,3)
+other=np.load('other.npy')
 
 #make label and merge label
 labels = np.zeros(len(dribble))

@@ -63,12 +63,16 @@ def Draw_kepyoint(data,Pairs,img,No_img,current):
         else:
 
             cv2.line(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])),
-                     (int(data[No_img][pairB][0]), int(data[No_img][pairB][1])),color[color_id], 3)
+                     (int(data[No_img][pairB][0]), int(data[No_img][pairB][1])),color[color_id], 2)
             cv2.circle(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])),3, (0, 0, 0),  thickness=-1, lineType=cv2.FILLED)
         color_id += 1
 
     cv2.putText(img,
                 str(current),
+                (100, 500), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                (0, 0, 0), 5)
+    cv2.putText(img,
+                str(No_img),
                 (500, 500), cv2.FONT_HERSHEY_SIMPLEX, 2,
                 (0, 0, 0), 5)
     cv2.imshow("Connect_img", img)
@@ -107,10 +111,10 @@ def Process_and_Save_Data(data ,Append_list,data_name,class_name,label_number):
     for i in Append_list:
         process_data.append(data[i])
     process_data=np.asarray(process_data)
-    with open('AppendList/half_'+class_name+'_e/'+filename+'.txt', "w") as fs:
+    with open('AppendList/half_'+class_name+'/'+filename+'.txt', "w") as fs:
         for i in Append_list:
             fs.write(str(i) + "\n")
-    np.save('Process_data/half_'+class_name+'_e/'+ filename+ '.npy', process_data)
+    np.save('Process_data/half_'+class_name+'/'+ filename+ '.npy', process_data)
     print('Successful process and Save to '+filename+'.npy')
 
 #Create tkinter GUI window
@@ -124,7 +128,7 @@ def Create_window(window,label,content,btn):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", default="Original_data/shoot/s5.npy", help="load the numpy type data")
+    parser.add_argument("--data_path",'-d', default="Original_data/shoot/s5.npy", help="load the numpy type data")
     args = parser.parse_known_args()
     #Load Original_data ＆ Reshape data  75 to 25*3
     # parameter No_img is Number of img , model type is choice model
@@ -135,7 +139,7 @@ if __name__ == '__main__':
     current= 0
     step = 0
     max_frame=40
-    move_space=3
+    move_space= 1
     LabelNo_d = 1
     LabelNo_s = 1
     LabelNo_o = 1
@@ -165,7 +169,7 @@ if __name__ == '__main__':
              break
 
         elif key == ord("c"):
-            if current < len(data)-1:
+            if current < len(data)-max_frame-1:
                 current = current + move_space
                 Append_list=Append_list[move_space:]
                 for i in range(move_space):
@@ -183,28 +187,37 @@ if __name__ == '__main__':
             else:
                 print("This is first picture")
 
-        elif key == ord("s"):
+        elif key == ord("w"):
                 print(" Append_list: ", Append_list)
-                print('Number of Photo:',len(Append_list))
+                print('dribble:',LabelNo_d-1,' shoot:',LabelNo_s-1,' other:',LabelNo_o-1)
 
 
         elif key == ord("d"):
-            class_name='dribble'
-            Process_and_Save_Data(data, Append_list, data_name, class_name,LabelNo_d)
-            LabelNo_d+=1
-            print('Current No_img:',current)
+            if len(Append_list)==max_frame:
+                class_name='dribble'
+                Process_and_Save_Data(data, Append_list, data_name, class_name,LabelNo_d)
+                LabelNo_d+=1
+                print('Current No_img:',current)
+            else:
+                print('Append list not enough ',max_frame,' frame')
 
         elif key == ord("s"):
-            class_name='shoot'
-            Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_s)
-            LabelNo_s += 1
-            print('Current No_img:', current)
+            if len(Append_list) == max_frame:
+                class_name='shoot'
+                Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_s)
+                LabelNo_s += 1
+                print('Current No_img:', current)
+            else:
+                print('Append list not enough ', max_frame, ' frame')
 
         elif key == ord("a"):
-            class_name='other'
-            Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_o)
-            LabelNo_o += 1
-            print('Current No_img:', current)
+            if len(Append_list) == max_frame:
+                class_name='other'
+                Process_and_Save_Data(data, Append_list, data_name, class_name, LabelNo_o)
+                LabelNo_o += 1
+                print('Current No_img:', current)
+            else:
+                print('Append list not enough ', max_frame, ' frame')
 
 
         elif key == ord('j'):
@@ -225,6 +238,9 @@ if __name__ == '__main__':
             lpd_btn = Button(lpd_window, text='click', command=lambda: Load_Processdata(lpd_content))
             Create_window(lpd_window, lpd_label, lpd_content, lpd_btn)
             No_img=0
+
+        elif key == ord('h'):
+            print('Total frame:',len(data))
 
 
 

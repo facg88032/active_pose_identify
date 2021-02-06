@@ -23,10 +23,12 @@ def main(class_name,num_sample,times,folder_path):
             #combine the all sample data
             tmp=util.combine(tmp,sample_data)
         print('Combine data shape:', tmp.shape)
-    total_data=tmp.reshape(int(len(tmp)/num_sample),num_sample,25,3)
+    #drop duplicatedata
+    total_data=tmp.reshape(int(len(tmp)/num_sample),num_sample*25*3)
+    total_data=util.DropDuplicate(total_data)
     #save all sample data
     np.save(class_name+'.npy',total_data)
-    print('total number of data',len(total_data))
+    print('total number of data',total_data.shape)
 
 if __name__ == '__main__':
 
@@ -35,7 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('--num_sample','-s',default=30 ,help='num_sample number of image')
     args = parser.parse_known_args()
     folder=args[0].folder_path
-    sample=args[0].num_select
+    sample=args[0].num_sample
     cf = configparser.ConfigParser()
     cf.read('config.ini')
     secs = cf.sections()
