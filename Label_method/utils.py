@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 import random
-class Utils:
+class Utils():
 
     def __init__(self):
-        pass
+        None
 
     def combine(self,data1,data2):
         if data1.size == 0:

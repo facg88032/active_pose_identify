@@ -21,7 +21,7 @@ dataset=np.vstack(((dataset,other)))
 x_data, y_data = shuffle(dataset, labels)
 
 
-#resize x_data
+# #resize x_data
 x_data[:,:,:,0] = x_data[:,:,:,0] / 480
 x_data[:,:,:,1] = x_data[:,:,:,1] / 640
 

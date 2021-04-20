@@ -4,10 +4,10 @@ import numpy as np
 import time
 import os
 
-Video='basketball_shot480p/'+'sv57.mp4'
+Video='process_basketball_Video/dribble/'+'d11.mp4'
 
 vs=cv2.VideoCapture(Video)
-index=2545
+index=0
 width=1280
 height=720
 vs.set(cv2.CAP_PROP_FRAME_WIDTH, width)

@@ -8,10 +8,10 @@ from keras.layers import Activation
 from keras.optimizers import Adam ,SGD
 from sklearn.preprocessing import OneHotEncoder
 from sklearn import preprocessing
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint , TensorBoard
 import pandas as pd
 import numpy as np
-
+import joblib as jb
 
 data_frame=30
 
@@ -21,14 +21,18 @@ enc=OneHotEncoder()
 Y_train=enc.fit_transform(Y_train).toarray()
 
 
-X_train=X_train.reshape((len(X_train,)*data_frame,25*3))
+X_train=X_train.reshape((len(X_train),data_frame*25*3))
 
-X_train=preprocessing.normalize(X_train)
+# X_train=preprocessing.normalize(X_train)
+scaler=preprocessing.StandardScaler().fit(X_train)
+X_train=scaler.transform(X_train)
+
+jb.dump(scaler,'std_scale2.bin',compress=True)
 
 
-blocks = int(len(X_train) / data_frame)
-X_train = np.array(np.split(X_train, blocks))
-
+# blocks = int(len(X_train) / (data_frame*25))
+# X_train = np.array(np.split(X_train, blocks))
+X_train =X_train.reshape(len(X_train),data_frame,25*3)
 # Initialising the RNN
 regressor = Sequential()
 
@@ -61,10 +65,22 @@ sgd = SGD(lr=learning_rate, momentum=momentum, decay=decay_rate, nesterov=False)
 # Compiling
 regressor.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics=['accuracy'])
 
+#checkpoint
 filepath="weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True,
 mode='max')
-callbacks_list = [checkpoint]
+
+#monitor
+tbCallBack = TensorBoard(log_dir='./logs',  # log 目录
+                 histogram_freq=0,  # 按照何等频率（epoch）来计算直方图，0为不计算
+#                  batch_size=32,     # 用多大量的数据计算直方图
+                 write_graph=True,  # 是否存储网络结构图
+                 write_grads=True, # 是否可视化梯度直方图
+                 write_images=True,# 是否可视化参数
+                 embeddings_freq=0,
+                 embeddings_layer_names=None,
+                 embeddings_metadata=None)
+callbacks_list = [checkpoint ,tbCallBack]
 regressor.summary()
 
 # 進行訓練

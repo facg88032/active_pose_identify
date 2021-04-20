@@ -111,10 +111,10 @@ def Process_and_Save_Data(data ,Append_list,data_name,class_name,label_number):
     for i in Append_list:
         process_data.append(data[i])
     process_data=np.asarray(process_data)
-    with open('AppendList/half_'+class_name+'/'+filename+'.txt', "w") as fs:
-        for i in Append_list:
-            fs.write(str(i) + "\n")
-    np.save('Process_data/half_'+class_name+'/'+ filename+ '.npy', process_data)
+    # with open('AppendList/half_'+class_name+'/'+filename+'.txt', "w") as fs:
+    #     for i in Append_list:
+    #         fs.write(str(i) + "\n")
+    np.save('Label_datasets/'+class_name+'1/'+ filename+ '.npy', process_data)
     print('Successful process and Save to '+filename+'.npy')
 
 #Create tkinter GUI window
@@ -128,7 +128,7 @@ def Create_window(window,label,content,btn):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path",'-d', default="Original_data/shoot/s5.npy", help="load the numpy type data")
+    parser.add_argument("--data_path",'-d', default="Original_data/dribble/d1.npy", help="load the numpy type data")
     args = parser.parse_known_args()
     #Load Original_data ＆ Reshape data  75 to 25*3
     # parameter No_img is Number of img , model type is choice model

@@ -84,13 +84,6 @@ while (vs.isOpened()):
             KeypointFrame = np.array([])
 
 
-
-
-
-
-
-
-
     #Get openpose Output
     image = datum.cvOutputData
     #Show the output

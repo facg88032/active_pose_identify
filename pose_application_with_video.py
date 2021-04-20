@@ -7,9 +7,10 @@ import time
 from sklearn import preprocessing
 import tensorflow as tf
 from Label_method.utils import Utils
-import pandas as pd
+import pandas as pdg
 import configparser
 import argparse
+import joblib as jb
 
 def load_Op_model(config):
     params = dict()
@@ -32,6 +33,7 @@ def load_video(config):
     vs=cv2.VideoCapture(config['video_path'])
     vs.set(cv2.CAP_PROP_FRAME_WIDTH, config.getint('width'))
     vs.set(cv2.CAP_PROP_FRAME_HEIGHT, config.getint('height'))
+    vs.set(cv2.CAP_PROP_POS_FRAMES, config.getint('index'))
     return  vs
 
 def load_config():
@@ -77,6 +79,8 @@ def main():
     dribble=[]
     shoot=[]
 
+    d=0
+    s=0
     while vs.isOpened():
         No_img=int(vs.get(cv2.CAP_PROP_POS_FRAMES))
         #Get frame from video or webcam
@@ -104,27 +108,45 @@ def main():
             SampleIndexs=util.StratifiedRandomSample(max_frame,30)
             sample_data = util.DataProcess(KeypointFrame, SampleIndexs)
 
-            sample_data = np.asarray(sample_data).reshape(30,75)
-            sample_data= preprocessing.normalize(sample_data)
+            #標準化
+            sample_data = np.asarray(sample_data).reshape(1,30*25*3)
+            scaler = jb.load('training/model/model_8_Standard/std_scale.bin')
+            # scaler = jb.load('training/std_scale2.bin')
+            sample_data = scaler.transform(sample_data)
+            sample_data = sample_data.reshape(1,30,75)
 
-            blocks = int(len(sample_data) / 30)
-            sample_data = np.array(np.split(sample_data, blocks))
-            output = HAR.predict_classes(sample_data)
-            print(output)
-            if output == 0:
-                cv2.putText(image,
-                            "dribble",
-                            (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                            (255, 25, 255), 5)
-                start_img=No_img-39
-                dribble.append(start_img)
-            elif output == 1:
-                cv2.putText(image,
-                            "shoot",
-                            (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                            (85, 255, 255), 5)
-                start_img = No_img - 39
-                shoot.append(start_img)
+            #正規劃
+            # sample_data = np.asarray(sample_data).reshape(30,25*3)
+            # sample_data= preprocessing.normalize(sample_data)
+            # blocks = int(len(sample_data) / 30)
+            # sample_data = np.array(np.split(sample_data, blocks))
+
+            result=HAR.predict(sample_data)
+            threshold=0.8
+
+            if result[0][0] > threshold:
+                d+=1
+                if d>=0:
+                    cv2.putText(image,
+                                "dribble",
+                                (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                                (255, 25, 255), 5)
+                    d=0
+                # start_img=No_img-39
+                # dribble.append(start_img)
+            elif result[0][1] > threshold:
+                s+=1
+                if s>=0:
+                    cv2.putText(image,
+                                "shoot",
+                                (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                                (85, 255, 255), 5)
+                    s=0
+                # start_img = No_img - 39
+                # shoot.append(start_img)
+            else:
+                d=0
+                s=0
 
 
 
