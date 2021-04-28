@@ -77,31 +77,43 @@ def Draw_kepyoint(data,Pairs,img,No_img,current):
                 (0, 0, 0), 5)
     cv2.imshow("Connect_img", img)
 
+#
+# #load Append_list
+# def Load_list(content):
+#     global Append_list
+#     Append_list=[]
+#     if os.path.isfile('AppendList/'+content.get()+'.txt'):
+#         with open('AppendList/'+content.get() + '.txt', "r") as fl:
+#             for i in fl:
+#                 i = int(i.strip())
+#                 Append_list.append(i)
+#         print('Successful Load Append List')
+#         print(" Append_list: ", Append_list)
+#     else:
+#         print('Load Failed')
+#
+# #load Processdata
+# def Load_Processdata(content):
+#     global data
+#     if os.path.isfile('Process_data/'+content.get()+'.npy'):
+#         data = Load_data('Process_data/'+content.get()+'.npy')
+#         data = data.reshape(len(data), 25, 3)
+#         print('Successful Load Data')
+#
+#     else:
+#         print('Load Failed')
 
-#load Append_list
-def Load_list(content):
-    global Append_list
-    Append_list=[]
-    if os.path.isfile('AppendList/'+content.get()+'.txt'):
-        with open('AppendList/'+content.get() + '.txt', "r") as fl:
-            for i in fl:
-                i = int(i.strip())
-                Append_list.append(i)
-        print('Successful Load Append List')
-        print(" Append_list: ", Append_list)
-    else:
-        print('Load Failed')
 
-#load Processdata
-def Load_Processdata(content):
-    global data
-    if os.path.isfile('Process_data/'+content.get()+'.npy'):
-        data = Load_data('Process_data/'+content.get()+'.npy')
-        data = data.reshape(len(data), 25, 3)
-        print('Successful Load Data')
+def FastLabel(start,end,data,data_name,class_name,label_number):
+    for i in range(start,end):
+        append_list = []
+        label_number=label_number-1
+        for j in range(i,i+40):
+            append_list.append(j)
 
-    else:
-        print('Load Failed')
+        Process_and_Save_Data(data,append_list,data_name,class_name,label_number)
+
+
 
 #Use Append list to process original data
 #Save process data and Append_list
@@ -114,7 +126,7 @@ def Process_and_Save_Data(data ,Append_list,data_name,class_name,label_number):
     # with open('AppendList/half_'+class_name+'/'+filename+'.txt', "w") as fs:
     #     for i in Append_list:
     #         fs.write(str(i) + "\n")
-    np.save('Label_datasets/'+class_name+'1/'+ filename+ '.npy', process_data)
+    np.save('Label_datasets/'+class_name+'/'+ filename+ '.npy', process_data)
     print('Successful process and Save to '+filename+'.npy')
 
 #Create tkinter GUI window
@@ -218,26 +230,51 @@ if __name__ == '__main__':
                 print('Current No_img:', current)
             else:
                 print('Append list not enough ', max_frame, ' frame')
+        elif key == ord("p"):
+            try:
+                start = int(input('start：'))
+                end = int(input('end：'))
+                class_name=input('class_name:')
+
+                certain=0
+                l_num=0
+                if class_name== 'dribble':
+                    certain = 1
+                    LabelNo_d = LabelNo_d + (end - start + 1)
+                    l_num = LabelNo_d
+                elif class_name == 'shoot':
+                    certain = 1
+                    LabelNo_s = LabelNo_s + (end - start + 1)
+                    l_num = LabelNo_s
+                elif class_name == 'other':
+                    certain = 1
+                    LabelNo_o = LabelNo_o + (end - start + 1)
+                    l_num = LabelNo_o
+                if start < end and certain == 1:
+                    FastLabel(start,end+1,data,data_name,class_name,l_num)
+            except ValueError:
+                print('Type Error')
 
 
-        elif key == ord('j'):
-            ld_window = Tk()
-            ld_window.title('Load_AppendList')
-            ld_window.geometry('200x100')
-            ld_label= Label(ld_window, text='Input your Filename')
-            ld_content = Entry(ld_window, borderwidth=5)
-            ld_btn = Button(ld_window, text='click', command=lambda :Load_list(ld_content))
-            Create_window(ld_window,ld_label,ld_content,ld_btn)
 
-        elif key == ord('k'):
-            lpd_window = Tk()
-            lpd_window.title('Load_ProcessData')
-            lpd_window.geometry('200x100')
-            lpd_label = Label(lpd_window, text='Input your Filename')
-            lpd_content = Entry(lpd_window, borderwidth=5)
-            lpd_btn = Button(lpd_window, text='click', command=lambda: Load_Processdata(lpd_content))
-            Create_window(lpd_window, lpd_label, lpd_content, lpd_btn)
-            No_img=0
+        # elif key == ord('j'):
+        #     ld_window = Tk()
+        #     ld_window.title('Load_AppendList')
+        #     ld_window.geometry('200x100')
+        #     ld_label= Label(ld_window, text='Input your Filename')
+        #     ld_content = Entry(ld_window, borderwidth=5)
+        #     ld_btn = Button(ld_window, text='click', command=lambda :Load_list(ld_content))
+        #     Create_window(ld_window,ld_label,ld_content,ld_btn)
+        #
+        # elif key == ord('k'):
+        #     lpd_window = Tk()
+        #     lpd_window.title('Load_ProcessData')
+        #     lpd_window.geometry('200x100')
+        #     lpd_label = Label(lpd_window, text='Input your Filename')
+        #     lpd_content = Entry(lpd_window, borderwidth=5)
+        #     lpd_btn = Button(lpd_window, text='click', command=lambda: Load_Processdata(lpd_content))
+        #     Create_window(lpd_window, lpd_label, lpd_content, lpd_btn)
+        #     No_img=0
 
         elif key == ord('h'):
             print('Total frame:',len(data))
