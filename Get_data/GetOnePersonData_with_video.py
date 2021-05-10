@@ -7,6 +7,7 @@ import argparse
 
 def main(video_path,save_path):
     for video in os.listdir(video_path):
+        # if video.endswith('.avi'):
         if video.endswith('.mp4'):
             print('Processing'+video+'...........')
             vs=cv2.VideoCapture(video_path+'/'+video)
@@ -23,9 +24,10 @@ def main(video_path,save_path):
             params["model_pose"] = "BODY_25"
             params["fps_max"] = -1
             params['write_video_fps']=-1
+            params['number_people_max'] = 1
             poseModel = op.PoseModel.BODY_25
             original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
-            keypoints_index = dict((bp, num) for num, bp in original_keypoints_index.items())
+            # keypoints_index = dict((bp, num) for num, bp in original_keypoints_index.items())
 
 
             # Starting OpenPose
@@ -61,7 +63,7 @@ def main(video_path,save_path):
                         KeypointFrame = keypoints
 
                 #Get openpose Output
-                image = datum.cvOutputData
+                # image = datum.cvOutputData
                 image_count +=1
                 #Show the output
                 #cv2.imshow("Openpose", image)
@@ -73,7 +75,8 @@ def main(video_path,save_path):
             print('FPS:',image_count/total_time)
 
             #Save data  as Numpy type
-            np.save(save_path+'/'+video.replace(".mp4",".npy"),KeypointFrame)
+            # np.save(save_path+'/'+video.replace(".mp4",".npy"),KeypointFrame)
+            np.save(save_path + '/' + video.replace(".mp4", ".npy"), KeypointFrame)
             print('Successful get '+video+' KeyPoints')
 
             vs.release()

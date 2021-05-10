@@ -43,11 +43,7 @@ def load_config():
 
 def main():
 
-
-
     cfg=load_config()
-
-
 
     # poseModel = op.PoseModel.BODY_25
     # original_keypoints_index = op.getPoseBodyPartMapping(poseModel)
@@ -60,14 +56,6 @@ def main():
 
     # Starting OpenPose
     wrapper,datum=load_Op_model(cfg['openpose'])
-
-
-
-
-
-
-
-
     max_frame=40
 
     util=Utils()
@@ -81,6 +69,12 @@ def main():
 
     d=0
     s=0
+    # scaler = jb.load('training/model/model_8_Standard/std_scale.bin')
+    # scaler = jb.load('training/model/model_9/std_scale2.bin')
+    # scaler = jb.load('training/model/model_10/std_scale3.bin')
+    # scaler = jb.load('training/model/model_11/std_scale4.bin')
+    # scaler = jb.load('training/model/model_ND2/std_scaleND.bin')
+    scaler = jb.load('training/model/model_ND3/std_scaleND.bin')
     while vs.isOpened():
         No_img=int(vs.get(cv2.CAP_PROP_POS_FRAMES))
         #Get frame from video or webcam
@@ -99,8 +93,8 @@ def main():
 
             #Reshape keypoints data and save KeypointFrame
             keypoints=datum.poseKeypoints[0].reshape(1, 25,3)
-            keypoints[:, :, 0] = keypoints[:, :, 0] / 480
-            keypoints[:, :, 1] = keypoints[:, :, 1] / 640
+            keypoints[:, :, 0] = keypoints[:, :, 0] / 640
+            keypoints[:, :, 1] = keypoints[:, :, 1] / 480
             KeypointFrame=util.combine(KeypointFrame,keypoints)
 
 
@@ -109,9 +103,7 @@ def main():
             sample_data = util.DataProcess(KeypointFrame, SampleIndexs)
 
             #標準化
-            sample_data = np.asarray(sample_data).reshape(1,30*25*3)
-            scaler = jb.load('training/model/model_8_Standard/std_scale.bin')
-            # scaler = jb.load('training/std_scale2.bin')
+            sample_data = np.asarray(sample_data).reshape(30,25*3)
             sample_data = scaler.transform(sample_data)
             sample_data = sample_data.reshape(1,30,75)
 
@@ -122,7 +114,8 @@ def main():
             # sample_data = np.array(np.split(sample_data, blocks))
 
             result=HAR.predict(sample_data)
-            threshold=0.8
+            print(result)
+            threshold=0.9
 
             if result[0][0] > threshold:
                 d+=1
@@ -132,8 +125,8 @@ def main():
                                 (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
                                 (255, 25, 255), 5)
                     d=0
-                # start_img=No_img-39
-                # dribble.append(start_img)
+                start_img=No_img-39
+                dribble.append(start_img)
             elif result[0][1] > threshold:
                 s+=1
                 if s>=0:
@@ -142,13 +135,11 @@ def main():
                                 (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
                                 (85, 255, 255), 5)
                     s=0
-                # start_img = No_img - 39
-                # shoot.append(start_img)
+                start_img = No_img - 39
+                shoot.append(start_img)
             else:
                 d=0
                 s=0
-
-
 
             KeypointFrame=np.delete(KeypointFrame,np.s_[:1],0)
 
@@ -164,11 +155,11 @@ def main():
     # clean up after yourself
     vs.release()
     cv2.destroyAllWindows()
-    #
-    # with open('dribble_log'+'.txt', "w") as fs:
-    #     for i in dribble:
-    #         fs.write(str(i) + "\n")
-    # with open('shoot_log'+'.txt', "w") as fs:
+
+    with open('dribble_log17'+'.txt', "w") as fs:
+        for i in dribble:
+            fs.write(str(i) + "\n")
+    # with open('shoot_log25'+'.txt', "w") as fs:
     #     for i in shoot:
     #         fs.write(str(i) + "\n")
 

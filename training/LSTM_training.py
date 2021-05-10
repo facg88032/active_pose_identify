@@ -21,18 +21,17 @@ enc=OneHotEncoder()
 Y_train=enc.fit_transform(Y_train).toarray()
 
 
-X_train=X_train.reshape((len(X_train),data_frame*25*3))
-
-# X_train=preprocessing.normalize(X_train)
+X_train=X_train.reshape((len(X_train)*data_frame,25*3))
 scaler=preprocessing.StandardScaler().fit(X_train)
 X_train=scaler.transform(X_train)
+jb.dump(scaler,'std_scaleND.bin',compress=True)
+X_train =X_train.reshape(int(len(X_train)/data_frame),data_frame,25*3)
 
-jb.dump(scaler,'std_scale2.bin',compress=True)
-
-
-# blocks = int(len(X_train) / (data_frame*25))
+# X_train=X_train.reshape((len(X_train)*data_frame,25*3))
+# X_train=preprocessing.normalize(X_train)
+# blocks = int(len(X_train) / (data_frame))
 # X_train = np.array(np.split(X_train, blocks))
-X_train =X_train.reshape(len(X_train),data_frame,25*3)
+
 # Initialising the RNN
 regressor = Sequential()
 
@@ -55,18 +54,18 @@ regressor.add(Dropout(0.5))
 # Adding the output layer
 regressor.add(Dense(3,activation='softmax'))
 
-learning_rate = 0.1
-decay_rate = learning_rate / 100000
+learning_rate = 0.01
+decay_rate = learning_rate / 10000
 momentum = 0.8
 sgd = SGD(lr=learning_rate, momentum=momentum, decay=decay_rate, nesterov=False)
 
-#adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
+adam = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
 # Compiling
-regressor.compile(optimizer = 'adam', loss = 'categorical_crossentropy', metrics=['accuracy'])
+regressor.compile(optimizer = adam , loss = 'categorical_crossentropy', metrics=['accuracy'])
 
 #checkpoint
-filepath="weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
+filepath="C_training_model/weights-improvement-{epoch:02d}-{val_accuracy:.2f}.hdf5"
 checkpoint = ModelCheckpoint(filepath, monitor='val_accuracy', verbose=1, save_best_only=True,
 mode='max')
 
@@ -84,4 +83,4 @@ callbacks_list = [checkpoint ,tbCallBack]
 regressor.summary()
 
 # 進行訓練
-regressor.fit(X_train, Y_train, validation_split=0.3,epochs =100,callbacks=callbacks_list,batch_size = 200)
+regressor.fit(X_train, Y_train, validation_split=0.3,epochs =250,callbacks=callbacks_list,batch_size = 200)

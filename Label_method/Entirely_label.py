@@ -55,26 +55,32 @@ def Draw_kepyoint(data,Pairs,img,No_img,current):
              (255, 255, 0),#22 23
              (255, 255, 0),]#11 24
     color_id=0
+
+
     for pairA,pairB in Pairs:
 
         if (data[No_img][pairA][0] == 0 and data[No_img][pairA][1] == 0) or (
                 data[No_img][pairB][0] == 0 and data[No_img][pairB][1] == 0):
             pass
         else:
-
             cv2.line(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])),
                      (int(data[No_img][pairB][0]), int(data[No_img][pairB][1])),color[color_id], 2)
-            cv2.circle(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])),3, (0, 0, 0),  thickness=-1, lineType=cv2.FILLED)
+
+        cv2.circle(img, (int(data[No_img][pairA][0]), int(data[No_img][pairA][1])), 3, (0, 0, 0), thickness=-1,
+                   lineType=cv2.FILLED)
+        cv2.circle(img, (int(data[No_img][pairB][0]), int(data[No_img][pairB][1])), 3, (0, 0, 0), thickness=-1,
+                   lineType=cv2.FILLED)
         color_id += 1
+
 
     cv2.putText(img,
                 str(current),
                 (100, 500), cv2.FONT_HERSHEY_SIMPLEX, 2,
                 (0, 0, 0), 5)
-    cv2.putText(img,
-                str(No_img),
-                (500, 500), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                (0, 0, 0), 5)
+    # cv2.putText(img,
+    #             str(No_img),
+    #             (500, 500), cv2.FONT_HERSHEY_SIMPLEX, 2,
+    #             (0, 0, 0), 5)
     cv2.imshow("Connect_img", img)
 
 #
@@ -105,13 +111,15 @@ def Draw_kepyoint(data,Pairs,img,No_img,current):
 
 
 def FastLabel(start,end,data,data_name,class_name,label_number):
-    for i in range(start,end):
-        append_list = []
-        label_number=label_number-1
-        for j in range(i,i+40):
-            append_list.append(j)
-
-        Process_and_Save_Data(data,append_list,data_name,class_name,label_number)
+    if (end+40)>len(data):
+        print("Out of Index")
+    else:
+        for i in range(start,end+1):
+            append_list = []
+            label_number=label_number-1
+            for j in range(i,i+40):
+                append_list.append(j)
+            Process_and_Save_Data(data,append_list,data_name,class_name,label_number)
 
 
 
@@ -181,7 +189,7 @@ if __name__ == '__main__':
              break
 
         elif key == ord("c"):
-            if current < len(data)-max_frame-1:
+            if current < len(data)-max_frame:
                 current = current + move_space
                 Append_list=Append_list[move_space:]
                 for i in range(move_space):
@@ -251,7 +259,7 @@ if __name__ == '__main__':
                     LabelNo_o = LabelNo_o + (end - start + 1)
                     l_num = LabelNo_o
                 if start < end and certain == 1:
-                    FastLabel(start,end+1,data,data_name,class_name,l_num)
+                    FastLabel(start,end,data,data_name,class_name,l_num)
             except ValueError:
                 print('Type Error')
 
