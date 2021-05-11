@@ -69,12 +69,8 @@ def main():
 
     d=0
     s=0
-    # scaler = jb.load('training/model/model_8_Standard/std_scale.bin')
-    # scaler = jb.load('training/model/model_9/std_scale2.bin')
-    # scaler = jb.load('training/model/model_10/std_scale3.bin')
-    # scaler = jb.load('training/model/model_11/std_scale4.bin')
-    # scaler = jb.load('training/model/model_ND2/std_scaleND.bin')
-    scaler = jb.load('training/model/model_ND3/std_scaleND.bin')
+
+    scaler = jb.load('training/model/model_Final/std_scaleND.bin')
     while vs.isOpened():
         No_img=int(vs.get(cv2.CAP_PROP_POS_FRAMES))
         #Get frame from video or webcam

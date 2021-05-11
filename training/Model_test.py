@@ -6,13 +6,12 @@ from sklearn import preprocessing,metrics
 import joblib as jb
 
 data_frame=30
-X_test=np.load('x_data.npy')
-Y_test=np.load('y_data.npy')
+X_test=np.load('x_test.npy')
+Y_test=np.load('y_test.npy')
 
 
 X_test = np.asarray(X_test).reshape(len(X_test)*data_frame,25*3)
-# scaler = jb.load('model/model_8_Standard/std_scale.bin')
-scaler = jb.load('model/model_ND3/std_scaleND.bin')
+scaler = jb.load('model/model_Final/std_scaleND.bin')
 X_test = scaler.transform(X_test)
 X_test = X_test.reshape(int(len(X_test)/data_frame),data_frame,25*3)
 
@@ -23,9 +22,7 @@ X_test = X_test.reshape(int(len(X_test)/data_frame),data_frame,25*3)
 # blocks = int(len(X_test) / data_frame)
 # X_test = np.array(np.split(X_test, blocks))
 
-model_path="model/model_ND3/weights-improvement-32-1.00.hdf5"
-# model_path="model/model_8_Standard/weights-improvement-100-1.00.hdf5"
-# model_path="model/model_6_0412/weights-improvement-98-0.99.hdf5"
+model_path="model/model_Final/weights-improvement-32-1.00.hdf5"
 mpose = keras.models.load_model(model_path)
 output = mpose.predict_classes(X_test)
 
@@ -47,7 +44,6 @@ normalised_confusion_matrix = np.array(confusion_matrix, dtype=np.float32)/np.su
 # width = 10
 # height = 10
 plt.figure()
-
 plt.imshow(
     normalised_confusion_matrix,
     interpolation='nearest',

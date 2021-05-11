@@ -32,6 +32,8 @@ X_train =X_train.reshape(int(len(X_train)/data_frame),data_frame,25*3)
 # blocks = int(len(X_train) / (data_frame))
 # X_train = np.array(np.split(X_train, blocks))
 
+# X_train =X_train.reshape(len(X_train),data_frame,25*3)
+
 # Initialising the RNN
 regressor = Sequential()
 
