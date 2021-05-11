@@ -164,14 +164,6 @@ if __name__ == '__main__':
     tf_config = tf.ConfigProto()
     tf_config.gpu_options.allow_growth = True
     session = tf.InteractiveSession(config=tf_config)
-    # Custom Params (refer to include/openpose/flags.hpp for more parameters)
-    # params = dict()
-    # params["model_folder"] = "../../../models/"
-    # params["model_pose"] = "BODY_25"
-    # params["fps_max"] = -1
-    # params['write_video_fps'] = -1
-    # params['number_people_max'] = 1
-    # params["disable_blending"] = True
 
 
 
