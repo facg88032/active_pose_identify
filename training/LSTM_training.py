@@ -24,8 +24,8 @@ Y_train=enc.fit_transform(Y_train).toarray()
 X_train=X_train.reshape((len(X_train)*data_frame,25*3))
 scaler=preprocessing.StandardScaler().fit(X_train)
 X_train=scaler.transform(X_train)
-jb.dump(scaler,'std_scaleND.bin',compress=True)
 X_train =X_train.reshape(int(len(X_train)/data_frame),data_frame,25*3)
+jb.dump(scaler,'std_scaleND.bin',compress=True)
 
 # X_train=X_train.reshape((len(X_train)*data_frame,25*3))
 # X_train=preprocessing.normalize(X_train)
@@ -85,4 +85,4 @@ callbacks_list = [checkpoint ,tbCallBack]
 regressor.summary()
 
 # 進行訓練
-regressor.fit(X_train, Y_train, validation_split=0.3,epochs =250,callbacks=callbacks_list,batch_size = 200)
+regressor.fit(X_train, Y_train, validation_split=0.3,epochs =100,callbacks=callbacks_list,batch_size = 200)

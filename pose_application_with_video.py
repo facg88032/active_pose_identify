@@ -69,8 +69,9 @@ def main():
 
     d=0
     s=0
-
+    # scaler = jb.load('training/model/model_ND1/std_scaleND.bin')
     scaler = jb.load('training/model/model_Final/std_scaleND.bin')
+
     while vs.isOpened():
         No_img=int(vs.get(cv2.CAP_PROP_POS_FRAMES))
         #Get frame from video or webcam
@@ -152,7 +153,7 @@ def main():
     vs.release()
     cv2.destroyAllWindows()
 
-    with open('dribble_log17'+'.txt', "w") as fs:
+    with open('dribble_log'+'.txt', "w") as fs:
         for i in dribble:
             fs.write(str(i) + "\n")
     # with open('shoot_log25'+'.txt', "w") as fs:
