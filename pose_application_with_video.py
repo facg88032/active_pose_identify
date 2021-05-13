@@ -156,9 +156,9 @@ def main():
     with open('dribble_log'+'.txt', "w") as fs:
         for i in dribble:
             fs.write(str(i) + "\n")
-    # with open('shoot_log25'+'.txt', "w") as fs:
-    #     for i in shoot:
-    #         fs.write(str(i) + "\n")
+    with open('shoot_log'+'.txt', "w") as fs:
+        for i in shoot:
+            fs.write(str(i) + "\n")
 
 
 if __name__ == '__main__':
