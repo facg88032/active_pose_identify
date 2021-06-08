@@ -20,17 +20,15 @@ def OutputPartVideo(indexs,vs,class_name):
 
 dribble_indexs = []
 shoot_indexs = []
-if os.path.isfile('shoot_log.txt'):
-    with open('shoot_log.txt','r') as fs:
-        for text in fs:
-            text=text.strip()
-            shoot_indexs.append(text)
-
-if os.path.isfile('dribble_log.txt'):
-    with open('dribble_log.txt','r') as fs:
-        for text in fs:
-            text=text.strip()
-            dribble_indexs.append(text)
+if os.path.isfile('shoot_log.txt') and os.path.isfile('dribble_log.txt'):
+    with open('shoot_log.txt','r') as s_logs:
+        for s_log in s_logs:
+            s_log=s_log.strip()
+            shoot_indexs.append(s_log)
+    with open('dribble_log.txt','r') as d_logs:
+        for d_log in d_logs:
+            d_log=d_log.strip()
+            dribble_indexs.append(d_log)
 
 Video='Video/5-7NewData_P/'+'ND2adm2.mp4'
 vs=cv2.VideoCapture(Video)
@@ -43,7 +41,7 @@ max_frame=40
 if len(shoot_indexs)!=0:
     OutputPartVideo(shoot_indexs,vs,class_name='shoot')
 if len(dribble_indexs)!=0:
-    OutputPartVideo(shoot_indexs,vs,class_name='dribble')
+    OutputPartVideo(dribble_indexs,vs,class_name='dribble')
 
 vs.release()
 cv2.destroyAllWindows()
