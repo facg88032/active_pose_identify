@@ -62,7 +62,7 @@ def main():
 
     # Create array to save all keypoint frame
     KeypointFrame=np.asarray([])
-    start = time.time()
+    # start = time.time()
 
     dribble=[]
     shoot=[]
@@ -73,6 +73,7 @@ def main():
     scaler = jb.load('training/model/model_Final/std_scaleND.bin')
 
     while vs.isOpened():
+        start_time=time.time()
         No_img=int(vs.get(cv2.CAP_PROP_POS_FRAMES))
         #Get frame from video or webcam
         ret ,frame=vs.read()
@@ -115,32 +116,31 @@ def main():
             threshold=0.9
 
             if result[0][0] > threshold:
-                d+=1
-                if d>=0:
-                    cv2.putText(image,
-                                "dribble",
-                                (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                                (255, 25, 255), 5)
-                    d=0
+                cv2.putText(image,
+                            "dribble",
+                            (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                            (255, 25, 255), 5)
+
                 start_img=No_img-39
                 dribble.append(start_img)
             elif result[0][1] > threshold:
-                s+=1
-                if s>=0:
-                    cv2.putText(image,
-                                "shoot",
-                                (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
-                                (85, 255, 255), 5)
-                    s=0
+                cv2.putText(image,
+                            "shoot",
+                            (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                            (255, 200, 0), 5)
+
                 start_img = No_img - 39
                 shoot.append(start_img)
-            else:
-                d=0
-                s=0
+
 
             KeypointFrame=np.delete(KeypointFrame,np.s_[:1],0)
 
-
+        end_time = time.time()
+        run_time = end_time - start_time
+        cv2.putText(image,
+                    str(round(1/run_time,3)),
+                    (450, 450), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                    (85, 255, 255), 1)
         #Show the output
         cv2.imshow("Openpose", image)
 
