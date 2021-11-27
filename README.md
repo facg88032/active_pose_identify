@@ -5,3 +5,4 @@
 主要使用
 OpenPose
 Keras
+![](https://github.com/facg88032/active_pose_identify/blob/master/demo/dribble.gif)
